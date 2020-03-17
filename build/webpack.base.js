@@ -3,8 +3,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const utils = require('./utils')
-
+const publicAssetPath ='./static'
 // 抽离style为link的css
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const Webpack = require('webpack');
@@ -21,13 +20,12 @@ module.exports = {
     },
     devtool: 'cheap-module-eval-source-map',//前台报错可以直接查看到哪个文件报错
     output: {
-        filename: 'js/[name]-[hash:8].bundle.js',
+        filename: `${publicAssetPath}/js/[name]-[hash:8].bundle.js`,
         path: path.resolve(__dirname, '../dist'),//路径必须是一个绝对路径
-        publicPath: "/",
     },
     resolve:{//解析第三方模块
         modules:[path.resolve('node_modules')],
-        extensions:['.js','.css','.scss','.less','.json'],
+        extensions:['.js','.css','.scss','.less','.json','.jsx'],
         alias:{
             '@': resolve('src')
         }
@@ -52,7 +50,7 @@ module.exports = {
                 use:'expose-loader?$'
             },*/
             {
-                test:/\.js$/,
+                test:/\.js|\.jsx$/,
                 include:path.resolve(__dirname,'../src'),
                 exclude:/node_modules/,
                 use:{
@@ -62,13 +60,19 @@ module.exports = {
                             corejs: '2.0',
                             useBuiltIns:'usage'
                         }],'@babel/preset-react'],
-                        plugins:["@babel/plugin-transform-runtime"]
+                        plugins:["@babel/plugin-transform-runtime",
+                            ["@babel/plugin-proposal-decorators", { "legacy": true }],
+                            ["@babel/plugin-proposal-class-properties", { "loose": true }],
+                            ["import", {"libraryName": "antd", "libraryDirectory": "es"},'ant'],
+                            ["import", {"libraryName": "lodash", "libraryDirectory": "", "camel2DashComponentName":false},'lodash'],
+                            ["import", {"libraryName": "jquery", "libraryDirectory": "", "camel2DashComponentName":false},'jquery'],
+                        ]
                     }
                 }
             },
             {
                 test: /\.css$/,
-                exclude:/node_modules/,
+                //exclude:/node_modules/,
                 use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
             },
             {
@@ -97,8 +101,7 @@ module.exports = {
                     loader:'url-loader',
                     options:{
                         limit:200*1024,// 超过这个用　file-loader 生成真正的图片,否则用url-loader
-                        //outputPath:'img/',
-                        name: utils.assetsPath('img/[name].[hash:7].[ext]')
+                        outputPath:'img/',
                         //publicPath:"http://xxx" //单独给图片加publicPath
                     }
                 }
@@ -132,12 +135,15 @@ module.exports = {
         new Webpack.DefinePlugin({
             DEV:"'dev'" //在全局都可以使用DEV这个环境变量了
         }),
-
+        new MiniCssExtractPlugin({
+            filename: `${publicAssetPath}/css/[name]-[hash:8].css`
+        }),
         new Webpack.ProvidePlugin({
             $:'jquery', //在每个模块中都注入 $,
             jQuery: "jquery",
             'window.jQuery': 'jquery',
-            _:'loadash'
+            _:'lodash'
+
         }),
         // new Webpack.DllReferencePlugin({
         //    manifest:path.resolve(__dirname,'../','manifest.json')
@@ -149,6 +155,6 @@ module.exports = {
         ]),
         //版权声明 webpack内置插件
         new Webpack.BannerPlugin('make 2019 by polyna'),
-    ],
+    ]
 };
 

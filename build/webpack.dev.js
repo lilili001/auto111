@@ -3,8 +3,7 @@ const base = require('./webpack.base.js');
 const path = require('path');
 const Webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
 module.exports = smart(base,{
     mode:'development',
     devtool:'source-map',
@@ -14,10 +13,11 @@ module.exports = smart(base,{
         compress: true,
         port: 8080,
         proxy:{
-            /*'api':{
-             target:'http://localhost:3000',
-             pathRewrite:{'/api':''}//可以过滤api前缀
-             }*/
+            '/api':{
+                 target:'http://localhost:8000',
+                 changeOrigin: true,
+                 pathRewrite:{'/api':'/api'}//可以过滤api前缀
+             }
         },
         quiet: true,
     },
@@ -46,11 +46,8 @@ module.exports = smart(base,{
     plugins:[
         // Add FriendlyErrorsPlugin
         new FriendlyErrorsPlugin({
-
+            
         }) ,
-         new MiniCssExtractPlugin({
-            filename: 'css/[name]-[hash:8].css'
-        }),
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: 'index.html',
@@ -60,6 +57,6 @@ module.exports = smart(base,{
             chunks: ['app','common','vendor'] // 引入的代码块
         }),
         new Webpack.NamedModulesPlugin(),//打印更新的模块路径
-        new Webpack.HotModuleReplacementPlugin()//热更新插件
+        new Webpack.HotModuleReplacementPlugin(),//热更新插件
     ]
 })

@@ -1,9 +1,7 @@
 import { combineReducers } from "redux"
-
-import tweetsReducer from "./tweetsReducer"
 import userReducer from "./userReducer"
+import attributeSetReducer from './AttributeSet'
+import app from './app'
 
-export default combineReducers({
-    tweetsReducer,
-    userReducer,
-})
+var reducers = {userReducer,app};
+export default combineReducers(reducers)

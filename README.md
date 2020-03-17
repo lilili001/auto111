@@ -112,3 +112,8 @@ new Webpack.ProvidePlugin({
             'jquery':'$'
         }),
 ```
+
+## 修改菜单
+1. routes/config.js 中添加路由
+2. dLayout中引用路由
+3. components/sideMenu.js中侧边栏显示菜单

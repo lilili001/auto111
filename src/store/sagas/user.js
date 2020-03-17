@@ -24,9 +24,11 @@ function* fetchTodos() {
 }
 
 export function* watchFetchUserAsync() {
-    yield takeEvery('FETCH_USER_REQUEST',fetchUser)
-}
-
-export function* watchFetchTodosAsync() {
+    yield takeEvery('user/alice',fetchUser)
     yield takeEvery('FETCH_TODO_REQUEST',fetchTodos)
 }
+
+/*
+export function* watchFetchTodosAsync() {
+    yield takeEvery('FETCH_TODO_REQUEST',fetchTodos)
+}*/
